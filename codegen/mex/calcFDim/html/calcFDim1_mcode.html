@@ -1,0 +1,65 @@
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="1,1" id="srcline1"> 1</a></span><span class="line"><span class="keyword">function</span> calcFDim(<span class="var type1" id="S2T1U5">filename</span>)</span></span>
+<span class="srcline"><span class="lineno"><a href="1,2" id="srcline2"> 2</a></span><span class="line"><span class="comment">%чтение файла c2t после Tisean, поиск пика в автокорреляционной фунции и провозглашение его фрактальной размерностью. Запись ряда фрактальных размерностей для каждого dim в файл. </span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,3" id="srcline3"> 3</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,4" id="srcline4"> 4</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,5" id="srcline5"> 5</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,6" id="srcline6"> 6</a></span><span class="line"><span class="message error" id="M1F1C">clear</span> <span class="string">peaks</span> <span class="string">npeaks</span> <span class="string">x</span> <span class="string">y</span> <span class="string">yy</span> <span class="string">yfit</span> <span class="string">np</span> <span class="string">ret</span> <span class="string">Block</span> <span class="string">Data</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,7" id="srcline7"> 7</a></span><span class="line"><span class="comment">%hold off</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,8" id="srcline8"> 8</a></span><span class="line"><span class="var type0" id="S4T0U20">ret</span> =[];</span></span>
+<span class="srcline"><span class="lineno"><a href="1,9" id="srcline9"> 9</a></span><span class="line"><span class="var type0" id="S5T0U25">yy</span> =[];</span></span>
+<span class="srcline"><span class="lineno"><a href="1,10" id="srcline10">10</a></span><span class="line"><span class="message error" id="M2F1C">[<span class="var type0" id="S6T0U31"><span class="message error" id="M3F1C">Data</span></span>,<span class="var type0" id="S7T0U32"><span class="message error" id="M4F1C">n</span></span>] = <span class="fcn" id="F2N3:B34">ReadC2T</span>(<span class="var type1" id="S2T1U35">filename</span>)</span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="1,11" id="srcline11">11</a></span><span class="line"><span class="keyword">for</span> <span class="var type0" id="S9T0U38">i</span>=1:<span class="var type0" id="S7T0U41"><span class="message error" id="M5F1C">n</span></span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,12" id="srcline12">12</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="1,13" id="srcline13">13</a></span><span class="line">    <span class="var type0" id="S10T0U44">x</span>=<span class="var type0" id="S6T0U47"><span class="message error" id="M6F1C">Data</span></span>{<span class="var type0" id="S9T0U48">i</span>}(:,1);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,14" id="srcline14">14</a></span><span class="line">    <span class="var type0" id="S11T0U53">y</span>=<span class="var type0" id="S6T0U56"><span class="message error" id="M7F1C">Data</span></span>{<span class="var type0" id="S9T0U57">i</span>}(:,2);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,15" id="srcline15">15</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="1,16" id="srcline16">16</a></span><span class="line">    <span class="comment">%     plot(x,y);   % рисунок до построения линии</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,17" id="srcline17">17</a></span><span class="line">    <span class="comment">%     hold on</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,18" id="srcline18">18</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="1,19" id="srcline19">19</a></span><span class="line">    [<span class="var type0" id="S12T0U63"><span class="message error" id="M9F1C">ac1</span></span>, <span class="var type0" id="S13T0U64"><span class="message error" id="M10F1C">ac2</span></span>] = autocorr(<span class="var type0" id="S11T0U67"><span class="message error" id="M8F1C">y</span></span>,length(<span class="var type0" id="S11T0U71">y</span>)-1);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,20" id="srcline20">20</a></span><span class="line">    <span class="comment">%plot(ac2, ac1)</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,21" id="srcline21">21</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="1,22" id="srcline22">22</a></span><span class="line">    [<span class="var type0" id="S16T0U76"><span class="message error" id="M12F1C">peaks</span></span>, <span class="var type0" id="S7T0U77"><span class="message error" id="M13F1C">n</span></span>] = findpeaks(<span class="var type0" id="S12T0U80"><span class="message error" id="M11F1C">ac1</span></span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,23" id="srcline23">23</a></span><span class="line">    <span class="comment">%[peaks, n]= findpeaks(ac1,'MinPeakWidth',8);</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,24" id="srcline24">24</a></span><span class="line">    <span class="comment">%peaks = -peaks;</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,25" id="srcline25">25</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="1,26" id="srcline26">26</a></span><span class="line">    <span class="keyword">if</span>(~isempty(<span class="var type0" id="S16T0U88"><span class="message error" id="M14F1C">peaks</span></span>) &amp;&amp; <span class="var type0" id="S16T0U91"><span class="message fatal" id="M15F1C">peaks</span></span>(1) &gt; 0)</span></span>
+<span class="srcline"><span class="lineno"><a href="1,27" id="srcline27">27</a></span><span class="line">        <span class="var type0" id="S19T0U96">np</span> = <span class="var type0" id="S7T0U98">n</span>(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,28" id="srcline28">28</a></span><span class="line">        </span></span>
+<span class="srcline"><span class="lineno"><a href="1,29" id="srcline29">29</a></span><span class="line">        <span class="comment">%npoint2 = y(end);</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,30" id="srcline30">30</a></span><span class="line">    <span class="keyword">else</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,31" id="srcline31">31</a></span><span class="line">        <span class="var type0" id="S20T0U103">tmp</span> = <span class="var type0" id="S12T0U105">ac1</span>(<span class="var type0" id="S12T0U107">ac1</span> &gt; 0);  <span class="var type0" id="S19T0U111">np</span>= length(<span class="var type0" id="S20T0U114">tmp</span>);   <span class="comment">%индекс первой точка из y, автокорреляционная функция при которой меньше или равна нулю</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,32" id="srcline32">32</a></span><span class="line">        <span class="comment">%point2 = y(end);</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,33" id="srcline33">33</a></span><span class="line">    <span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,34" id="srcline34">34</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="1,35" id="srcline35">35</a></span><span class="line">    <span class="comment">%p = polyfit(x(np:end), y(np:end), 1);          %аппроксимация 1 порядка от первого пика</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,36" id="srcline36">36</a></span><span class="line">    <span class="var type0" id="S21T0U117">p</span> = polyfit([<span class="var type0" id="S10T0U123">x</span>(<span class="var type0" id="S19T0U124">np</span>) <span class="var type0" id="S10T0U126">x</span>(end)], [<span class="var type0" id="S11T0U132">y</span>(<span class="var type0" id="S19T0U133">np</span>) <span class="var type0" id="S11T0U135">y</span>(end)], 1);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,37" id="srcline37">37</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="1,38" id="srcline38">38</a></span><span class="line">    <span class="comment">%plot([x(np) x(end)] , [y(np) y(end)], 'rv');</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,39" id="srcline39">39</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="1,40" id="srcline40">40</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="1,41" id="srcline41">41</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="1,42" id="srcline42">42</a></span><span class="line">    <span class="var type0" id="S24T0U141">yfit</span> = <span class="var type0" id="S21T0U144">p</span>(2)+<span class="var type0" id="S10T0U147">x</span>.*<span class="var type0" id="S21T0U149">p</span>(1);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,43" id="srcline43">43</a></span><span class="line">  <span class="comment">%  plot(x,yfit,'r');</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,44" id="srcline44">44</a></span><span class="line">  <span class="comment">%  ylim([0,6]);</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,45" id="srcline45">45</a></span><span class="line">    </span></span>
+<span class="srcline"><span class="lineno"><a href="1,46" id="srcline46">46</a></span><span class="line">    disp(sprintf(<span class="string">'y(np)=%d'</span>,<span class="var type0" id="S11T0U158">y</span>(<span class="var type0" id="S19T0U159">np</span>)));</span></span>
+<span class="srcline"><span class="lineno"><a href="1,47" id="srcline47">47</a></span><span class="line">    <span class="var type0" id="S5T0U163">yy</span>(<span class="var type0" id="S9T0U164">i</span>) = <span class="var type0" id="S11T0U166">y</span>(<span class="var type0" id="S19T0U167">np</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,48" id="srcline48">48</a></span><span class="line">    <span class="comment">%disp(sprintf('p(%i) =%f\n',i, p(1)));</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,49" id="srcline49">49</a></span><span class="line">    <span class="comment">%hold off</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,50" id="srcline50">50</a></span><span class="line"><span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,51" id="srcline51">51</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,52" id="srcline52">52</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,53" id="srcline53">53</a></span><span class="line">fclose(<span class="string">'all'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,54" id="srcline54">54</a></span><span class="line"><span class="var type0" id="S28T0U174">fid</span> = fopen(<span class="string">'dimension.dat'</span>,<span class="string">'w'</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,55" id="srcline55">55</a></span><span class="line">fprintf(<span class="var type0" id="S28T0U182">fid</span>, <span class="string">'%6.6f\n'</span>, <span class="var type0" id="S5T0U184">yy</span>); </span></span>
+<span class="srcline"><span class="lineno"><a href="1,56" id="srcline56">56</a></span><span class="line">fclose(<span class="var type0" id="S28T0U188">fid</span>);</span></span>
+<span class="srcline"><span class="lineno"><a href="1,57" id="srcline57">57</a></span><span class="line"><span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,58" id="srcline58">58</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,59" id="srcline59">59</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,60" id="srcline60">60</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,61" id="srcline61">61</a></span><span class="line"><span class="comment">%%hold off</span></span></span>
+<span class="srcline"><span class="lineno"><a href="1,62" id="srcline62">62</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="1,63" id="srcline63">63</a></span><span class="line"></span></span>
+</pre>
