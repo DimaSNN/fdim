@@ -1,13 +1,18 @@
 function calcFDim(filename)
 %чтение файла c2t после Tisean, поиск пика в автокорреляционной фунции и провозглашение его фрактальной размерностью. Запись ряда фрактальных размерностей для каждого dim в файл. 
 
+%debug default value
+if nargin < 1
+  filename = 'Lorenz.dat.c2t'; 
+end
 
 
-clear peaks npeaks x y yy yfit np ret Block Data
+
+clear peaks npeaks x y yy yfit np ret Block Data n nn
 %hold off
 ret =[];
 yy =[];
-[Data,n] = ReadC2T(filename);
+[Data,n] = Read(filename);
 for i=1:n
         
     x=Data{i}(:,1);
@@ -19,12 +24,12 @@ for i=1:n
     [ac1, ac2] = autocorr(y,length(y)-1);
     %plot(ac2, ac1)
     
-    [peaks, n] = findpeaks(ac1);
+    [peaks, nn] = findpeaks(ac1);
     %[peaks, n]= findpeaks(ac1,'MinPeakWidth',8);
-    %peaks = -peaks;
+    %peaks = -peaks;dim
     
     if(~isempty(peaks) && peaks(1) > 0)
-        np = n(1);
+        np = nn(1);
         
         %npoint2 = y(end);
     else
@@ -43,7 +48,7 @@ for i=1:n
   %  plot(x,yfit,'r');
   %  ylim([0,6]);
     
-    disp(sprintf('y(np)=%d',y(np)));
+    disp(sprintf('n=%d, y(np)=%d', i, y(np)));
     yy(i) = y(np);
     %disp(sprintf('p(%i) =%f\n',i, p(1)));
     %hold off
@@ -51,19 +56,24 @@ end
 
 
 fclose('all');
+[pks,locs] = findpeaks(yy)
+
 fid = fopen('dimension.dat','w');
-fprintf(fid, '%6.6f\n', yy); 
+fprintf(fid, '%6.6f\n', pks );
+fprintf(fid, 'n=%d\n', locs );
+fprintf(fid, 'nmax was %d\n', n );
 fclose(fid);
+fclose('all');
 end
 
 
 
 %%hold off
 
-
-function [retData, n ]  = ReadC2T(filename)
+%usually it is waiting for c2t files
+function [retData, n ]  = Read(filename)  
     fclose('all');
-    fileID = fopen([filename '' '.c2t'],'r');
+    fileID = fopen(filename,'r');
     %fileID = fopen('Lorenz.dat.c2t','r');
 
     InputText = textscan(fileID, '#m=%d' ,1, 'Delimiter', '\n'); %здесь просто пропускается строка
